@@ -1,4 +1,389 @@
-hello
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTC Calculator - Cost to Company</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-World 
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .input-card, .result-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #667eea;
+        }
+
+        .amount {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .breakdown-card {
+            grid-column: 1 / -1;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .breakdown-item {
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .breakdown-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .breakdown-amount {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CTC Calculator</h1>
+        
+        <div class="calculator-grid">
+            <div class="input-card">
+                <h2 class="card-title">Salary Components</h2>
+                
+                <div class="form-group">
+                    <label for="basicSalary">Basic Salary (₹)
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Usually 40-50% of total salary</span>
+                        </span>
+                    </label>
+                    <input type="number" id="basicSalary" placeholder="Enter basic salary">
+                </div>
+
+                <div class="form-group">
+                    <label for="hra">House Rent Allowance - HRA (₹)
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Usually 40-50% of basic salary</span>
+                        </span>
+                    </label>
+                    <input type="number" id="hra" placeholder="Enter HRA amount">
+                </div>
+
+                <div class="form-group">
+                    <label for="allowances">Other Allowances (₹)
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Travel, Medical, Special allowances etc.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="allowances" placeholder="Enter other allowances">
+                </div>
+
+                <div class="form-group">
+                    <label for="bonus">Annual Bonus (₹)
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Performance bonus, festival bonus etc.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="bonus" placeholder="Enter annual bonus">
+                </div>
+
+                <div class="form-group">
+                    <label for="pfEmployer">Employer PF Contribution (₹)
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Usually 12% of basic salary</span>
+                        </span>
+                    </label>
+                    <input type="number" id="pfEmployer" placeholder="Enter employer PF contribution">
+                </div>
+
+                <div class="form-group">
+                    <label for="esi">ESI Contribution (₹)
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Employer's ESI contribution</span>
+                        </span>
+                    </label>
+                    <input type="number" id="esi" placeholder="Enter ESI contribution">
+                </div>
+
+                <div class="form-group">
+                    <label for="insurance">Medical Insurance (₹)
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Company paid medical insurance premium</span>
+                        </span>
+                    </label>
+                    <input type="number" id="insurance" placeholder="Enter insurance premium">
+                </div>
+
+                <div class="form-group">
+                    <label for="otherBenefits">Other Benefits (₹)
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Gratuity, leave encashment, other perks</span>
+                        </span>
+                    </label>
+                    <input type="number" id="otherBenefits" placeholder="Enter other benefits">
+                </div>
+
+                <button class="calculate-btn" onclick="calculateCTC()">Calculate CTC</button>
+            </div>
+
+            <div class="result-card">
+                <h2 class="card-title">CTC Calculation</h2>
+                
+                <div id="results">
+                    <div class="result-item">
+                        <span>Annual Gross Salary:</span>
+                        <span class="amount" id="grossSalary">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Monthly Gross Salary:</span>
+                        <span class="amount" id="monthlyGross">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Employer Contributions:</span>
+                        <span class="amount" id="employerContrib">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Total Annual CTC:</span>
+                        <span class="amount" id="totalCTC">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Monthly CTC:</span>
+                        <span class="amount" id="monthlyCTC">₹0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="breakdown-card">
+            <h2 class="card-title">CTC Breakdown</h2>
+            <div class="breakdown-grid">
+                <div class="breakdown-item">
+                    <div class="breakdown-title">Basic Salary</div>
+                    <div class="breakdown-amount" id="breakdownBasic">₹0</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-title">HRA</div>
+                    <div class="breakdown-amount" id="breakdownHRA">₹0</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-title">Other Allowances</div>
+                    <div class="breakdown-amount" id="breakdownAllowances">₹0</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-title">Annual Bonus</div>
+                    <div class="breakdown-amount" id="breakdownBonus">₹0</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-title">Employer PF</div>
+                    <div class="breakdown-amount" id="breakdownPF">₹0</div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-title">Insurance & Benefits</div>
+                    <div class="breakdown-amount" id="breakdownInsurance">₹0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateCTC() {
+            // Get input values
+            const basicSalary = parseFloat(document.getElementById('basicSalary').value) || 0;
+            const hra = parseFloat(document.getElementById('hra').value) || 0;
+            const allowances = parseFloat(document.getElementById('allowances').value) || 0;
+            const bonus = parseFloat(document.getElementById('bonus').value) || 0;
+            const pfEmployer = parseFloat(document.getElementById('pfEmployer').value) || 0;
+            const esi = parseFloat(document.getElementById('esi').value) || 0;
+            const insurance = parseFloat(document.getElementById('insurance').value) || 0;
+            const otherBenefits = parseFloat(document.getElementById('otherBenefits').value) || 0;
+
+            // Calculate components
+            const annualGrossSalary = (basicSalary + hra + allowances) * 12;
+            const employerContributions = pfEmployer + esi + insurance + otherBenefits;
+            const totalCTC = annualGrossSalary + bonus + employerContributions;
+            const monthlyGross = annualGrossSalary / 12;
+            const monthlyCTC = totalCTC / 12;
+
+            // Update results
+            document.getElementById('grossSalary').textContent = `₹${annualGrossSalary.toLocaleString('en-IN')}`;
+            document.getElementById('monthlyGross').textContent = `₹${monthlyGross.toLocaleString('en-IN')}`;
+            document.getElementById('employerContrib').textContent = `₹${employerContributions.toLocaleString('en-IN')}`;
+            document.getElementById('totalCTC').textContent = `₹${totalCTC.toLocaleString('en-IN')}`;
+            document.getElementById('monthlyCTC').textContent = `₹${monthlyCTC.toLocaleString('en-IN')}`;
+
+            // Update breakdown
+            document.getElementById('breakdownBasic').textContent = `₹${(basicSalary * 12).toLocaleString('en-IN')}`;
+            document.getElementById('breakdownHRA').textContent = `₹${(hra * 12).toLocaleString('en-IN')}`;
+            document.getElementById('breakdownAllowances').textContent = `₹${(allowances * 12).toLocaleString('en-IN')}`;
+            document.getElementById('breakdownBonus').textContent = `₹${bonus.toLocaleString('en-IN')}`;
+            document.getElementById('breakdownPF').textContent = `₹${pfEmployer.toLocaleString('en-IN')}`;
+            document.getElementById('breakdownInsurance').textContent = `₹${(esi + insurance + otherBenefits).toLocaleString('en-IN')}`;
+        }
+
+        // Auto-calculate PF when basic salary changes
+        document.getElementById('basicSalary').addEventListener('input', function() {
+            const basicSalary = parseFloat(this.value) || 0;
+            const pfAmount = Math.round(basicSalary * 0.12); // 12% of basic salary
+            document.getElementById('pfEmployer').value = pfAmount;
+        });
+
+        // Auto-calculate HRA when basic salary changes (40% of basic)
+        document.getElementById('basicSalary').addEventListener('input', function() {
+            const basicSalary = parseFloat(this.value) || 0;
+            const hraAmount = Math.round(basicSalary * 0.4); // 40% of basic salary
+            if (document.getElementById('hra').value === '' || document.getElementById('hra').value === '0') {
+                document.getElementById('hra').value = hraAmount;
+            }
+        });
+    </script>
+</body>
+</html>
